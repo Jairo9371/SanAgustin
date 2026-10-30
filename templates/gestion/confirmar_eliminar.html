@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block title %}Eliminar · {{ titulo }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'gestion:listado' slug %}"
+  >{{ titulo }}</a
+>
+/ Eliminar{% endblock %} {% block content %}
+<div class="panel confirm">
+  <span class="warning-icon">!</span>
+  <h1>¿Eliminar registro?</h1>
+  <p>
+    Se eliminará <strong>{{ registro }}</strong> de la tabla
+    <strong>{{ titulo }}</strong>.
+  </p>
+  <p class="muted">
+    Esta operación no se puede deshacer y podría estar bloqueada si existen
+    registros relacionados.
+  </p>
+  <form method="post">
+    {% csrf_token %}<button class="btn btn-danger" type="submit">
+      Sí, eliminar definitivamente</button
+    ><a
+      class="btn btn-outline"
+      href="{% url 'gestion:detalle' slug registro.pk %}"
+      >Cancelar</a
+    >
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}{% load gestion_extras %} {% block title %}{{ titulo }}
+· Detalle{% endblock %}{% block breadcrumb %}<a
+  href="{% url 'gestion:listado' slug %}"
+  >{{ titulo }}</a
+>
+/ Detalle{% endblock %} {% block content %}
+<div class="page-head">
+  <div>
+    <span class="eyebrow">REGISTRO</span>
+    <h1>Detalle de {{ titulo|lower }}</h1>
+    <p class="muted">ID: {{ registro.pk }}</p>
+  </div>
+  <div class="buttons">
+    <a class="btn btn-outline" href="{% url 'gestion:listado' slug %}"
+      >← Volver</a
+    ><a
+      class="btn btn-primary"
+      href="{% url 'gestion:editar' slug registro.pk %}"
+      >Editar</a
+    ><a
+      class="btn btn-danger"
+      href="{% url 'gestion:eliminar' slug registro.pk %}"
+      >Eliminar</a
+    >
+  </div>
+</div>
+<div class="panel details">
+  {% for col in campos %}
+  <div class="detail">
+    <span>{{ col.verbose_name|capfirst }}</span
+    ><strong>{{ registro|campo:col.name|linebreaksbr }}</strong>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }} · Relaciones{% endblock %}
+{% block breadcrumb %}{{ titulo }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <span class="eyebrow">TABLA CON PK COMPUESTA</span>
+    <h1>{{ titulo }}</h1>
+    <p class="muted">
+      Consulta y administración de relaciones. Total de registros: {{ paginator.count }}.
+    </p>
+  </div>
+  <div class="buttons">
+    <a class="btn btn-outline" href="{% url 'gestion:inicio' %}">← Volver</a>
+    <a class="btn btn-primary" href="{% url 'gestion:nueva_relacion' slug %}"
+      >+ Nuevo registro</a
+    >
+  </div>
+</div>
+<div class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          {% for col in columnas %}
+          <th>{{ col|capfirst }}</th>
+          {% endfor %}
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          {% for fila in filas %}
+          <tr>
+              {% if slug == 'medicamento_componente' %}
+
+                  <td>{{ fila.2 }}</td>
+                  <td>{{ fila.3 }}</td>
+
+              {% else %}
+
+                  {% for valor in fila %}
+                      <td>
+                          {{ valor|default_if_none:'—'|truncatechars:80 }}
+                      </td>
+                  {% endfor %}
+
+              {% endif %}
+
+          <td class="actions">
+            <a href="{% url 'gestion:editar_relacion' slug fila.0 fila.1 %}"
+              >Editar</a
+            >
+            <a
+              class="danger-link"
+              href="{% url 'gestion:eliminar_relacion' slug fila.0 fila.1 %}"
+              >Eliminar</a
+            >
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="{{ columnas|length|add:'1' }}" class="empty">No hay registros.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if is_paginated %}
+  <nav class="pagination" aria-label="Páginas de relaciones">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">← Anterior</a>
+    {% endif %}
+    <span>Página {{ page_obj.number }} de {{ paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">Siguiente →</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

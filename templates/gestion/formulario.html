@@ -1,0 +1,96 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+{{ accion }} - {{ titulo }}
+{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'gestion:listado' slug %}">
+    {{ titulo }}
+</a>
+/ {{ accion }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">FORMULARIO</span>
+
+        <h1>{{ accion }} registro</h1>
+
+        <p class="muted">
+            {{ titulo }} - Los campos con * son obligatorios.
+        </p>
+        {% if slug == 'factura' %}
+        <p class="muted">
+            Guarda la factura y añade sus detalles para calcular el subtotal y los
+            importes del paciente y la aseguradora. Después puedes ajustar el deducible aplicado.
+        </p>
+        {% elif slug == 'detalle_factura' %}
+        <p class="muted">
+            El subtotal de la línea y los totales de la factura se calculan al guardar.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<form method="post" class="panel form-panel" novalidate>
+
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-error">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <div class="form-grid">
+
+        {% for field in form %}
+
+            <div class="form-group">
+
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+
+                    {% if field.field.required %}
+                        *
+                    {% endif %}
+                </label>
+
+                {{ field }}
+
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+
+                {% for error in field.errors %}
+                    <div class="field-error">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="form-actions">
+
+        <button type="submit" class="btn btn-primary">
+            Guardar cambios
+        </button>
+
+        <a href="{% url 'gestion:listado' slug %}"
+           class="btn btn-outline">
+            Cancelar
+        </a>
+
+    </div>
+
+</form>
+
+{% endblock %}

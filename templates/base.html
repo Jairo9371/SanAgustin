@@ -1,0 +1,46 @@
+{% load static %}<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Hospital San Agustín{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-content">
+        <a class="brand" href="{% url 'gestion:inicio' %}"
+          >✚ Hospital San Agustín <small>Gestión hospitalaria</small></a
+        >
+        {% if user.is_authenticated %}
+        <div class="account">
+          <span>Usuario: {{ user.username }}</span>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}<button class="btn btn-outline" type="submit">
+              Cerrar sesión
+            </button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </header>
+    <main class="container main">
+      {% if user.is_authenticated %}
+      <nav class="breadcrumbs">
+        <a href="{% url 'gestion:inicio' %}">Inicio</a> /
+        {% block breadcrumb %}Panel{% endblock %}
+      </nav>
+      {% endif %} {% for msg in messages %}
+      <div
+        class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}"
+      >
+        {{ msg }}
+      </div>
+      {% endfor %} {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">
+      Proyecto académico · Django + SQL Server · Datos clínicos de acceso
+      restringido
+    </footer>
+  </body>
+</html>

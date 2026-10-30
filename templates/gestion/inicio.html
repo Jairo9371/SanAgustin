@@ -1,0 +1,76 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Panel principal{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div>
+        <span class="eyebrow">
+            PANEL DE ADMINISTRACIÓN
+        </span>
+        <h1>Hospital San Agustín</h1>
+        <p>
+            Sistema de gestión hospitalaria
+        </p>
+    </div>
+    <div class="hero-symbol">✚</div>
+</section>
+
+<div class="summary">
+    <div class="summary-card">
+        <span>Módulos disponibles</span>
+        <strong>30</strong>
+    </div>
+
+    <div class="summary-card">
+        <span>Tablas principales</span>
+        <strong>25</strong>
+    </div>
+
+    <div class="summary-card">
+        <span>Tablas de relación</span>
+        <strong>5</strong>
+    </div>
+</div>
+
+{% for seccion in secciones %}
+
+<section class="section">
+
+    <h2>{{ seccion.nombre }}</h2>
+
+    <div class="module-grid">
+
+        {% for modulo in seccion.modulos %}
+
+        <a class="module"
+           href="{% if modulo.pk_compuesta %}{% url 'gestion:relaciones' modulo.slug %}{% else %}{% url 'gestion:listado' modulo.slug %}{% endif %}">
+
+            <div class="module-mark">✚</div>
+
+            <div>
+                <strong>{{ modulo.nombre }}</strong>
+                <small>
+                    Administrar registros
+                </small>
+            </div>
+
+            <span class="arrow">→</span>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% empty %}
+
+<p>No se encontraron módulos para mostrar.</p>
+
+{% endfor %}
+
+{% endblock %}

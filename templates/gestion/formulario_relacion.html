@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}{{ accion }} · {{ titulo }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'gestion:relaciones' slug %}"
+  >{{ titulo }}</a
+>
+/ {{ accion }}{% endblock %} {% block content %}
+<div class="page-head">
+  <div>
+    <span class="eyebrow">CLAVE PRIMARIA COMPUESTA</span>
+    <h1>{{ accion }} relación</h1>
+    <p class="muted">{{ titulo }} · Los campos con * son obligatorios.</p>
+  </div>
+</div>
+<form class="panel form-panel" method="post" novalidate>
+  {% csrf_token %}{% if form.non_field_errors %}
+  <div class="alert alert-error">{{ form.non_field_errors }}</div>
+  {% endif %}
+  <div class="form-grid">
+    {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.id_for_label }}"
+        >{{ field.label }}{% if field.field.required %} *{% endif %}</label
+      >
+      {{ field }}{% for error in field.errors %}
+      <div class="field-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Guardar registro</button>
+    <a class="btn btn-outline" href="{% url 'gestion:relaciones' slug %}"
+      >Cancelar</a
+    >
+  </div>
+</form>
+{% endblock %}

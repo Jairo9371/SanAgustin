@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block title %}Eliminar · {{ titulo }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'gestion:relaciones' slug %}"
+  >{{ titulo }}</a
+>
+/ Eliminar{% endblock %} {% block content %}
+<div class="panel confirm">
+  <span class="warning-icon">!</span>
+  <h1>¿Eliminar esta relación?</h1>
+  <p>{{ titulo }}</p>
+  <div class="details">
+    {% for campo, valor in registro.items %}
+    <div class="detail">
+      <span>{{ campo }}</span><strong>{{ valor|default_if_none:'—' }}</strong>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="muted">
+    La eliminación es definitiva. Puede fallar si otros registros dependen de
+    ella.
+  </p>
+  <form method="post">
+    {% csrf_token %}<button class="btn btn-danger" type="submit">
+      Eliminar definitivamente
+    </button>
+    <a class="btn btn-outline" href="{% url 'gestion:relaciones' slug %}"
+      >Cancelar</a
+    >
+  </form>
+</div>
+{% endblock %}
