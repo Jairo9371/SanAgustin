@@ -7,9 +7,13 @@ from django.db.models import ProtectedError, Q, CharField, TextField
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from .catalogo import MODELOS, RELACIONES, ETIQUETAS, SECCIONES
-from .forms import formulario_para
+from .forms import BusquedaHistorialForm, formulario_para
+from .historial import consultar_historial
+from .models import Paciente
 
 class SoloPersonal(LoginRequiredMixin, UserPassesTestMixin):
     """En este proyecto académico solo las cuentas staff acceden a datos clínicos."""
@@ -39,6 +43,28 @@ class InicioView(SoloPersonal, TemplateView):
         data = super().get_context_data(**kwargs)
         data['secciones'] = SECCIONES
         return data
+
+
+@method_decorator(never_cache, name='dispatch')
+class HistorialPacienteView(SoloPersonal, TemplateView):
+    template_name = 'gestion/consulta_historial.html'
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        busqueda_realizada = 'dpi' in self.request.GET
+        form = BusquedaHistorialForm(self.request.GET if busqueda_realizada else None)
+        data.update({
+            'form': form, 'busqueda_realizada': busqueda_realizada,
+            'paciente': None, 'historial': [], 'condiciones': [], 'alergias': [],
+            'page_obj': None, 'paginator': None, 'is_paginated': False,
+        })
+        if busqueda_realizada and form.is_valid():
+            paciente = Paciente.objects.filter(dpi=form.cleaned_data['dpi']).first()
+            if paciente is not None:
+                data['paciente'] = paciente
+                data.update(consultar_historial(paciente, self.request.GET.get('page')))
+        return data
+
 
 class VistaModelo(SoloPersonal):
     def dispatch(self, request, *args, **kwargs):

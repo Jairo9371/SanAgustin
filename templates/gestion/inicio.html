@@ -35,6 +35,20 @@
     </div>
 </div>
 
+<section class="section">
+    <h2>Expedientes clínicos</h2>
+    <div class="module-grid">
+        <a class="module" href="{% url 'gestion:consulta_historial' %}">
+            <div class="module-mark">✚</div>
+            <div>
+                <strong>Historial médico del paciente</strong>
+                <small>Buscar por DPI y consultar sus atenciones</small>
+            </div>
+            <span class="arrow">→</span>
+        </a>
+    </div>
+</section>
+
 {% for seccion in secciones %}
 
 <section class="section">

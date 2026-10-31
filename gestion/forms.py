@@ -4,6 +4,28 @@ from django.core.validators import EmailValidator, RegexValidator, MinValueValid
 from django.forms import modelform_factory
 
 
+class BusquedaHistorialForm(forms.Form):
+    dpi = forms.RegexField(
+        label='DPI del paciente',
+        regex=r'\A[0-9]{13}\Z',
+        strip=True,
+        min_length=13,
+        max_length=13,
+        help_text='Escribe los 13 dígitos, sin espacios ni guiones.',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'inputmode': 'numeric',
+            'pattern': '[0-9]{13}', 'autocomplete': 'off',
+            'placeholder': 'DPI de 13 dígitos',
+        }),
+        error_messages={
+            'required': 'Ingresa el DPI del paciente.',
+            'invalid': 'El DPI debe tener exactamente 13 dígitos.',
+            'min_length': 'El DPI debe tener exactamente 13 dígitos.',
+            'max_length': 'El DPI debe tener exactamente 13 dígitos.',
+        },
+    )
+
+
 class FechaHoraInput(forms.DateTimeInput):
     supports_microseconds = True
 

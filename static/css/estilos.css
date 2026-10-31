@@ -460,6 +460,141 @@ td {
   padding: 24px;
   background: #eaf0f4;
 }
+.historial h2,
+.historial h3,
+.historial h4 {
+  color: var(--navy);
+}
+.historial h2 {
+  font-size: 20px;
+  margin: 4px 0 14px;
+}
+.historial h3 {
+  font-size: 19px;
+  margin: 0;
+}
+.historial h4 {
+  font-size: 15px;
+  margin: 0 0 10px;
+}
+.historial p {
+  overflow-wrap: anywhere;
+}
+.historial-busqueda,
+.historial-paciente,
+.historial-consulta {
+  margin-bottom: 18px;
+}
+.historial-formulario {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.historial-formulario .form-group {
+  flex: 1 1 270px;
+  max-width: 430px;
+}
+.historial-formulario small {
+  display: block;
+  margin-top: 5px;
+}
+.historial-datos,
+.historial-antecedentes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+}
+.historial-datos {
+  margin: 12px 0 0;
+}
+.historial-datos div,
+.historial-notas div {
+  min-width: 0;
+}
+.historial dt {
+  font-weight: 650;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.historial dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.historial-antecedentes {
+  margin-bottom: 28px;
+}
+.historial-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.historial-lista li {
+  padding: 10px 0;
+  overflow-wrap: anywhere;
+}
+.historial-lista li + li {
+  border-top: 1px solid var(--line);
+}
+.historial-lista p {
+  margin: 5px 0 0;
+}
+.historial-consulta-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.historial-diagnosticos {
+  margin-top: 20px;
+}
+.historial-diagnosticos .historial-lista li {
+  padding: 4px 0;
+}
+.historial-expediente {
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 14px;
+}
+.historial-expediente summary {
+  color: var(--blue);
+  cursor: pointer;
+  font-weight: 650;
+}
+.historial-expediente summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+.historial-expediente-contenido {
+  display: grid;
+  gap: 22px;
+  margin-top: 22px;
+}
+.historial-expediente-contenido section + section {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.historial-notas {
+  margin: 0;
+}
+.historial-notas div + div {
+  margin-top: 16px;
+}
+@media (max-width: 540px) {
+  .historial-datos,
+  .historial-antecedentes {
+    grid-template-columns: 1fr;
+  }
+  .historial .pagination {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}
 @media (max-width: 820px) {
   .module-grid {
     grid-template-columns: repeat(2, 1fr);

@@ -1,44 +1,183 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Historial Médico del Paciente</h2>
-    
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="GET" action="" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Buscar por DPI:</label>
-                    <input type="text" name="dpi" class="form-control" placeholder="Ingrese el DPI del paciente...">
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+{% block title %}Historial médico del paciente · Hospital San Agustín{% endblock %}
+{% block breadcrumb %}Historial médico{% endblock %}
 
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>Fecha Consulta</th>
-                    <th>Médico Tratante</th>
-                    <th>Especialidad</th>
-                    <th>Presión Arterial</th>
-                    <th>Diagnóstico</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>25/10/2026</td>
-                    <td>Dr. Roberto Mendoza</td>
-                    <td>Medicina General</td>
-                    <td>120/80</td>
-                    <td>Cefalea</td>
-                </tr>
-            </tbody>
-        </table>
+{% block content %}
+<div class="historial">
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">EXPEDIENTE CLÍNICO</span>
+      <h1>Historial médico del paciente</h1>
+      <p class="muted">Consulta las atenciones y los antecedentes registrados del paciente.</p>
     </div>
+    <a class="btn btn-outline" href="{% url 'gestion:listado' 'paciente' %}">Ver pacientes</a>
+  </div>
+  <div class="panel historial-busqueda">
+    <form method="get" action="{% url 'gestion:consulta_historial' %}" class="historial-formulario">
+      <div class="form-group">
+        <label for="{{ form.dpi.id_for_label }}">Buscar por DPI</label>
+        {{ form.dpi }}
+        <small>Ingresa los 13 dígitos, sin espacios ni guiones.</small>
+        {% for error in form.dpi.errors %}<div class="field-error" role="alert">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="buttons">
+        <button type="submit" class="btn btn-primary">Buscar historial</button>
+        {% if busqueda_realizada %}<a class="btn btn-outline" href="{% url 'gestion:consulta_historial' %}">Limpiar</a>{% endif %}
+      </div>
+    </form>
+    {% for error in form.non_field_errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+  </div>
+
+  {% if paciente %}
+  <section class="panel historial-paciente" aria-labelledby="historial-paciente-titulo">
+    <span class="eyebrow">PACIENTE</span>
+    <h2 id="historial-paciente-titulo">{{ paciente.nombres }} {{ paciente.apellidos }}</h2>
+    <dl class="historial-datos">
+      <div><dt>Expediente</dt><dd>{{ paciente.num_expediente }}</dd></div>
+      <div><dt>DPI</dt><dd>{{ paciente.dpi }}</dd></div>
+      <div><dt>Fecha de nacimiento</dt><dd>{{ paciente.fecha_nacimiento|date:"d/m/Y" }}</dd></div>
+      <div><dt>Sexo</dt><dd>{{ paciente.sexo }}</dd></div>
+      <div><dt>Tipo de sangre</dt><dd>{{ paciente.tipo_sangre|default:"Sin registrar" }}</dd></div>
+    </dl>
+  </section>
+  <div class="historial-antecedentes">
+    <section class="panel" aria-labelledby="historial-condiciones-titulo">
+      <h2 id="historial-condiciones-titulo">Condiciones crónicas</h2>
+      <ul class="historial-lista">
+        {% for condicion in condiciones %}
+        <li>
+          <strong>{{ condicion.nombre }}</strong>
+          {% if condicion.fecha_diagnostico %}<p class="muted">Fecha de diagnóstico: {{ condicion.fecha_diagnostico|date:"d/m/Y" }}</p>{% endif %}
+          {% if condicion.observaciones %}<p>{{ condicion.observaciones|linebreaksbr }}</p>{% endif %}
+        </li>
+        {% empty %}<li class="muted">No hay condiciones crónicas registradas.</li>{% endfor %}
+      </ul>
+    </section>
+    <section class="panel" aria-labelledby="historial-alergias-titulo">
+      <h2 id="historial-alergias-titulo">Alergias registradas</h2>
+      <ul class="historial-lista">
+        {% for alergia in alergias %}
+        <li>
+          <strong>{{ alergia.id_componente.nombre }}</strong>
+          <p>Severidad: {{ alergia.severidad|default:"Sin registrar" }}</p>
+          {% if alergia.reaccion %}<p>{{ alergia.reaccion|linebreaksbr }}</p>{% endif %}
+        </li>
+        {% empty %}<li class="muted">No hay alergias registradas.</li>{% endfor %}
+      </ul>
+    </section>
+  </div>
+
+  <section class="historial-atenciones" aria-labelledby="historial-atenciones-titulo">
+    <div class="page-head">
+      <div>
+        <h2 id="historial-atenciones-titulo">Consultas médicas</h2>
+        <p class="muted">{{ page_obj.paginator.count }} consulta{{ page_obj.paginator.count|pluralize:"s" }} registrada{{ page_obj.paginator.count|pluralize:"s" }} · Más recientes primero.</p>
+      </div>
+    </div>
+    {% for atencion in historial %}
+    <article class="panel historial-consulta" aria-labelledby="consulta-{{ atencion.consulta.pk }}">
+      <div class="historial-consulta-cabecera">
+        <h3 id="consulta-{{ atencion.consulta.pk }}"><time datetime="{{ atencion.consulta.fecha_hora_consulta|date:'c' }}">{{ atencion.consulta.fecha_hora_consulta|date:"d/m/Y H:i" }}</time></h3>
+        <span class="muted">Consulta #{{ atencion.consulta.pk }}</span>
+      </div>
+      <dl class="historial-datos">
+        <div><dt>Médico tratante</dt><dd>{{ atencion.consulta.id_cita.id_medico.nombres }} {{ atencion.consulta.id_cita.id_medico.apellidos }}</dd></div>
+        <div><dt>Especialidad</dt><dd>{{ atencion.consulta.id_cita.id_medico.id_especialidad.nombre }}</dd></div>
+        <div><dt>Sede y consultorio</dt><dd>{{ atencion.consulta.id_cita.id_consultorio.id_sede.nombre }} · {{ atencion.consulta.id_cita.id_consultorio.numero }}</dd></div>
+        <div><dt>Presión arterial</dt><dd>{% if atencion.triaje %}{{ atencion.triaje.presion_sistolica|default_if_none:"—" }}/{{ atencion.triaje.presion_diastolica|default_if_none:"—" }} mmHg{% else %}Sin triaje registrado{% endif %}</dd></div>
+      </dl>
+      <div class="historial-diagnosticos">
+        <h4>Diagnósticos</h4>
+        <ul class="historial-lista">
+          {% for diagnostico in atencion.diagnosticos %}
+          <li><strong>{{ diagnostico.descripcion }}</strong> <span class="muted">({{ diagnostico.codigo_cie10 }}) · {{ diagnostico.tipo }}</span></li>
+          {% empty %}<li class="muted">Sin diagnósticos registrados.</li>{% endfor %}
+        </ul>
+      </div>
+      <details class="historial-expediente">
+        <summary>Ver expediente de la consulta del {{ atencion.consulta.fecha_hora_consulta|date:"d/m/Y H:i" }}</summary>
+        <div class="historial-expediente-contenido">
+          <section>
+            <h4>Evaluación médica</h4>
+            <dl class="historial-notas">
+              <div><dt>Motivo de consulta</dt><dd>{{ atencion.consulta.id_cita.motivo_consulta|default:"Sin registrar"|linebreaksbr }}</dd></div>
+              <div><dt>Anamnesis</dt><dd>{{ atencion.consulta.anamnesis|default:"Sin registrar"|linebreaksbr }}</dd></div>
+              <div><dt>Examen físico</dt><dd>{{ atencion.consulta.examen_fisico|default:"Sin registrar"|linebreaksbr }}</dd></div>
+              <div><dt>Plan de tratamiento</dt><dd>{{ atencion.consulta.plan_tratamiento|default:"Sin registrar"|linebreaksbr }}</dd></div>
+            </dl>
+          </section>
+          <section>
+            <h4>Triaje y signos vitales</h4>
+            {% if atencion.triaje %}
+            <p class="muted">Registrado el {{ atencion.triaje.fecha_hora_triaje|date:"d/m/Y H:i" }}</p>
+            <dl class="historial-datos">
+              <div><dt>Peso</dt><dd>{{ atencion.triaje.peso_kg|default_if_none:"—" }} kg</dd></div>
+              <div><dt>Talla</dt><dd>{{ atencion.triaje.talla_cm|default_if_none:"—" }} cm</dd></div>
+              <div><dt>Frecuencia cardíaca</dt><dd>{{ atencion.triaje.frecuencia_cardiaca|default_if_none:"—" }} lpm</dd></div>
+              <div><dt>Temperatura</dt><dd>{{ atencion.triaje.temperatura_c|default_if_none:"—" }} °C</dd></div>
+              <div><dt>Nivel de urgencia</dt><dd>{{ atencion.triaje.nivel_urgencia|default_if_none:"—" }}</dd></div>
+            </dl>
+            {% if atencion.triaje.observaciones %}<p>{{ atencion.triaje.observaciones|linebreaksbr }}</p>{% endif %}
+            {% else %}<p class="muted">No hay triaje registrado para esta consulta.</p>{% endif %}
+          </section>
+          <section>
+            <h4>Receta y medicamentos</h4>
+            {% if atencion.receta %}
+            <p class="muted">Emitida el {{ atencion.receta.fecha_emision|date:"d/m/Y H:i" }} · Estado: {{ atencion.receta.estado }}</p>
+            <ul class="historial-lista">
+              {% for medicamento in atencion.medicamentos %}
+              <li>
+                <strong>{{ medicamento.id_medicamento.nombre_comercial }}</strong>
+                <p>{{ medicamento.id_medicamento.forma_farmaceutica|default:"Presentación sin registrar" }} · {{ medicamento.id_medicamento.concentracion|default:"Concentración sin registrar" }}</p>
+                <dl class="historial-datos">
+                  <div><dt>Dosis</dt><dd>{{ medicamento.dosis|linebreaksbr }}</dd></div>
+                  <div><dt>Vía de administración</dt><dd>{{ medicamento.via_administracion }}</dd></div>
+                  <div><dt>Frecuencia</dt><dd>Cada {{ medicamento.frecuencia_horas|default_if_none:"—" }} horas</dd></div>
+                  <div><dt>Duración</dt><dd>{{ medicamento.duracion_dias|default_if_none:"—" }} días</dd></div>
+                  <div><dt>Cantidad a despachar</dt><dd>{{ medicamento.cantidad_despachar|default_if_none:"—" }}</dd></div>
+                </dl>
+              </li>
+              {% empty %}<li class="muted">La receta no tiene medicamentos registrados.</li>{% endfor %}
+            </ul>
+            {% else %}<p class="muted">No hay receta registrada para esta consulta.</p>{% endif %}
+          </section>
+          <section>
+            <h4>Exámenes solicitados</h4>
+            <ul class="historial-lista">
+              {% for examen in atencion.examenes %}
+              <li>
+                <strong>{{ examen.id_examen.nombre }}</strong>
+                <p class="muted">{{ examen.fecha_solicitud|date:"d/m/Y H:i" }} · Estado: {{ examen.estado }}</p>
+                <p>{{ examen.resultado|default:"Sin resultado registrado"|linebreaksbr }}</p>
+              </li>
+              {% empty %}<li class="muted">No hay exámenes registrados para esta consulta.</li>{% endfor %}
+            </ul>
+          </section>
+          <section>
+            <h4>Procedimientos</h4>
+            <ul class="historial-lista">
+              {% for procedimiento in atencion.procedimientos %}
+              <li><strong>{{ procedimiento.nombre }}</strong> · Cantidad: {{ procedimiento.cantidad|default_if_none:"—" }}</li>
+              {% empty %}<li class="muted">No hay procedimientos registrados para esta consulta.</li>{% endfor %}
+            </ul>
+          </section>
+        </div>
+      </details>
+    </article>
+    {% empty %}<div class="panel empty">Este paciente todavía no tiene consultas médicas registradas.</div>{% endfor %}
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination" aria-label="Páginas del historial médico">
+      {% if page_obj.has_previous %}<a href="?dpi={{ form.dpi.value|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Anterior</a>{% endif %}
+      <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?dpi={{ form.dpi.value|urlencode }}&amp;page={{ page_obj.next_page_number }}">Siguiente →</a>{% endif %}
+    </nav>
+    {% endif %}
+  </section>
+  {% elif busqueda_realizada and not form.errors %}
+  <div class="panel empty" role="status">No se encontró un paciente con ese DPI.</div>
+  {% elif not busqueda_realizada %}
+  <div class="panel empty">Ingresa el DPI del paciente para consultar su historial médico.</div>
+  {% endif %}
 </div>
 {% endblock %}

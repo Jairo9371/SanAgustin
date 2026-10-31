@@ -155,6 +155,59 @@ En las **25 tablas con PK simple**, se emplea el ORM de Django (`objects`,
 `gestion/relaciones_crud.py` usa SQL *parametrizado* con `%s` para conservar
 exactamente sus dos claves primarias y evitar limitaciones del backend.
 
+### Registros de prueba en SQL Server
+
+Para agregar un lote de pacientes ficticios con citas, consultas, recetas,
+exámenes, facturas y pagos relacionados:
+
+```powershell
+python manage.py cargar_datos_prueba
+```
+
+La carga predeterminada identifica sus registros con el lote `DEMO-20261030`
+y crea 20 pacientes con dos visitas cada uno. Se ejecuta en una transacción y
+puede repetirse sin duplicar los registros del mismo lote ni modificar los
+datos existentes. Los perfiles incluyen nombres, direcciones, contactos y textos
+de expediente ficticios, con correos en `example.com`. El número de expediente,
+la póliza y la factura conservan el identificador del lote.
+
+Para sustituir los textos genéricos de una carga anterior del mismo lote:
+
+```powershell
+python manage.py cargar_datos_prueba --naturalizar
+```
+
+Esta opción solo actualiza los valores genéricos reconocidos en los registros
+existentes del lote; conserva las ediciones manuales, los identificadores,
+las relaciones, las fechas y los importes. No agrega registros. Si el lote tiene
+una cantidad distinta de pacientes, indica `--pacientes` con esa cantidad.
+Puedes revisar el resultado sin guardar con `--naturalizar --dry-run`.
+
+Puedes usar `--pacientes 5` para un lote pequeño, `--lote DEMO-NUEVO` para
+crear otro lote o `--dry-run` para simular la carga y revertir sus inserciones.
+En SQL Server, la simulación puede dejar saltos en los identificadores `IDENTITY`.
+El historial médico ya consulta SQL Server; las otras pantallas `consulta_*`
+todavía contienen ejemplos fijos.
+
+### Historial médico del paciente
+
+Desde el panel principal, abre **Historial médico del paciente**, o usa el botón
+**Historial médico** en el detalle de un paciente. También está disponible en
+`http://127.0.0.1:8000/consulta_historial/`.
+
+Ingresa el DPI completo de 13 dígitos para consultar los datos del paciente,
+sus condiciones crónicas, alergias y atenciones, de la más reciente a la más
+antigua. Cada atención reúne médico, especialidad, triaje y todos sus diagnósticos.
+Al desplegar el expediente de una atención se muestran la evaluación, el plan de
+tratamiento, la receta, los exámenes con resultados y los procedimientos.
+
+El historial requiere una cuenta activa de personal (`is_staff=True`) y solo
+realiza lecturas. Muestra diez consultas por página y conserva el DPI al cambiar
+de página. Las citas que aún no tienen consulta no se incluyen como atenciones.
+La pantalla distingue entre un DPI inválido, un paciente que no existe y un
+paciente sin consultas; los datos clínicos opcionales ausentes se indican como
+no registrados.
+
 ### Cálculos de facturación
 
 Primero crea una factura y después sus detalles. El subtotal de cada línea es

@@ -11,6 +11,9 @@
     <p class="muted">ID: {{ registro.pk }}</p>
   </div>
   <div class="buttons">
+    {% if slug == 'paciente' %}
+    <a class="btn btn-dark" href="{% url 'gestion:consulta_historial' %}?dpi={{ registro.dpi|urlencode }}">Historial médico</a>
+    {% endif %}
     <a class="btn btn-outline" href="{% url 'gestion:listado' slug %}"
       >← Volver</a
     ><a
