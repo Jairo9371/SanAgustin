@@ -28,6 +28,7 @@
       {% if user.is_authenticated %}
       <nav class="breadcrumbs">
         <a href="{% url 'gestion:inicio' %}">Inicio</a> /
+          <a href="/consulta_historial/">Reportes</a> /
         {% block breadcrumb %}Panel{% endblock %}
       </nav>
       {% endif %} {% for msg in messages %}

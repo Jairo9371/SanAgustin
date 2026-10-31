@@ -59,15 +59,14 @@ DATABASES = {
         'USER': os.getenv('SQL_USER',''),
         'PASSWORD': os.getenv('SQL_PASSWORD',''),
         'OPTIONS': {
-            'driver': os.getenv('SQL_DRIVER','ODBC Driver 18 for SQL Server'),
-            'extra_params': 'Encrypt=yes;TrustServerCertificate=' + (
-                'yes' if os.getenv('SQL_TRUST_CERT','false').lower() == 'true' else 'no'
-            ),
+          'driver': 'ODBC Driver 17 for SQL Server',  
+            'extra_params': 'TrustServerCertificate=yes;Encrypt=yes;',
+        },
             'connection_timeout': 10,
             'connection_retries': 1,
         },
     }
-}
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Historial Médico del Paciente</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Buscar por DPI:</label>
+                    <input type="text" name="dpi" class="form-control" placeholder="Ingrese el DPI del paciente...">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Fecha Consulta</th>
+                    <th>Médico Tratante</th>
+                    <th>Especialidad</th>
+                    <th>Presión Arterial</th>
+                    <th>Diagnóstico</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>25/10/2026</td>
+                    <td>Dr. Roberto Mendoza</td>
+                    <td>Medicina General</td>
+                    <td>120/80</td>
+                    <td>Cefalea</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
